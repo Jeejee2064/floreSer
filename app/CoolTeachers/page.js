@@ -5,10 +5,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { ChevronLeft, ChevronRight, ArrowLeft, Save } from 'lucide-react';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+import { supabase } from '@/lib/supabaseClient'
 
 export default function CoolTeachersPage() {
   const [students, setStudents] = useState([]);
