@@ -1,65 +1,152 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { supabase } from '@/lib/supabaseClient'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Home() {
+  const [password, setPassword] = useState('')
+  const [student, setStudent] = useState(null)
+  const [progress, setProgress] = useState([])
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleLogin = async () => {
+    setError('')
+    setLoading(true)
+
+    const { data: studentData, error: studentError } = await supabase
+      .from('students')
+      .select('*')
+      .eq('password', password.trim())
+      .single()
+
+    if (studentError || !studentData) {
+      setError('Invalid password. Please try again.')
+      setLoading(false)
+      return
+    }
+
+    const { data: progressData, error: progressError } = await supabase
+      .from('progress')
+      .select(`
+        content,
+        progression,
+        comment,
+        subjects ( name )
+      `)
+      .eq('student_id', studentData.id)
+
+    if (progressError) {
+      setError('Error fetching progress.')
+      setLoading(false)
+      return
+    }
+
+    setStudent(studentData)
+    setProgress(progressData)
+    setLoading(false)
+  }
+
+  const handleLogout = () => {
+    setStudent(null)
+    setPassword('')
+    setProgress([])
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-200 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-6 md:p-10 border-4 border-yellow-200">
+        {!student ? (
+          <div className="text-center space-y-6">
+            <h1 className="text-3xl font-bold text-sky-700">
+              🌺 Welcome to FloreSer School Portal 🌺
+            </h1>
+            <p className="text-gray-600">
+              Please enter your secret password to see your class report card.
+            </p>
+
+            <div className="flex flex-col items-center gap-4">
+              <input
+                type="text"
+                placeholder="e.g. blue-toucan"
+                className="border-2 border-sky-300 rounded-xl p-3 w-64 text-center text-lg focus:outline-none focus:ring-4 focus:ring-sky-200"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                onClick={handleLogin}
+                disabled={loading}
+                className="bg-yellow-400 text-sky-800 font-bold px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all disabled:opacity-50 shadow-md"
+              >
+                {loading ? 'Loading...' : 'Enter'}
+              </button>
+            </div>
+
+            {error && <p className="text-red-600 font-semibold">{error}</p>}
+          </div>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="student"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-sky-800">
+                  🌺 Hello, {student.full_name}!
+                </h2>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm text-gray-500 underline hover:text-sky-700"
+                >
+                  Log out
+                </button>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse rounded-xl overflow-hidden shadow-md">
+                  <thead className="bg-sky-100 text-sky-800">
+                    <tr>
+                      <th className="text-left p-3 font-semibold">📘 Subject</th>
+                      <th className="text-left p-3 font-semibold">📖 Content</th>
+                      <th className="text-left p-3 font-semibold">📈 Progression</th>
+                      <th className="text-left p-3 font-semibold">💬 Comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {progress.map((p, i) => (
+                      <tr
+                        key={i}
+                        className={`${
+                          i % 2 === 0 ? 'bg-yellow-50' : 'bg-sky-50'
+                        } hover:bg-sky-100 transition`}
+                      >
+                        <td className="p-3 font-medium text-sky-900">
+                          {p.subjects.name}
+                        </td>
+                        <td className="p-3 text-gray-700">{p.content}</td>
+                        <td className="p-3 text-gray-700">
+                          {p.progression || 'In Progress'}
+                        </td>
+                        <td className="p-3 text-gray-600 italic">
+                          {p.comment ? `"${p.comment}"` : ''}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="text-center pt-4 text-gray-500 text-sm">
+                🌈 Keep learning and having fun!
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
     </div>
-  );
+  )
 }
