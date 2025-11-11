@@ -198,7 +198,7 @@ export default function CoolTeachersPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-lime-100 to-amber-100 p-8">
         <h1 className="text-4xl font-extrabold text-center mb-8 text-emerald-800 drop-shadow-sm">
-          🏝️ Tropical Teacher Dashboard
+          🏝️ Floreser Teacher Dashboard 🏝️
         </h1>
         <div className="flex flex-wrap justify-center gap-6">
           {students.map((student, index) => (
@@ -388,9 +388,9 @@ export default function CoolTeachersPage() {
         </table>
       </div>
 
-      
+
       <div className="mt-6 text-center text-sm text-emerald-700 italic">
-        🥥 Keep calm, stay fresh and teach with a smile!
+        🥥 Floreser Bocas del Toro
       </div>
     </div>
   );
