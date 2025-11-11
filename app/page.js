@@ -55,14 +55,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-6 md:p-10 border-4 border-yellow-200">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100 to-sky-200 flex items-center justify-center p-4 sm:p-6 md:p-10">
+      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-6 sm:p-8 md:p-10 border-4 border-yellow-200">
         {!student ? (
           <div className="text-center space-y-6">
-            <h1 className="text-3xl font-bold text-sky-700">
-              🌺 Welcome to FloreSer School Portal 🌺
+            <h1 className="text-2xl sm:text-3xl font-bold text-sky-700">
+              🌴 Welcome to FloreSer School Portal 🌺
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base max-w-md mx-auto">
               Please enter your secret password to see your class report card.
             </p>
 
@@ -70,14 +70,14 @@ export default function Home() {
               <input
                 type="text"
                 placeholder="e.g. blue-toucan"
-                className="border-2 border-sky-300 rounded-xl p-3 w-64 text-center text-lg focus:outline-none focus:ring-4 focus:ring-sky-200"
+                className="border-2 border-sky-300 rounded-xl p-3 w-64 sm:w-72 md:w-80 text-center text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-sky-200"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 onClick={handleLogin}
                 disabled={loading}
-                className="bg-yellow-400 text-sky-800 font-bold px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all disabled:opacity-50 shadow-md"
+                className="bg-yellow-400 text-sky-800 font-bold px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all disabled:opacity-50 shadow-md text-base sm:text-lg"
               >
                 {loading ? 'Loading...' : 'Enter'}
               </button>
@@ -94,26 +94,26 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="space-y-6"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-sky-800">
+              <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-bold text-sky-800">
                   🌺 Hello, {student.full_name}!
                 </h2>
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-gray-500 underline hover:text-sky-700"
+                  className="text-sm sm:text-base text-gray-500 underline hover:text-sky-700 mt-2 sm:mt-0"
                 >
                   Log out
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse rounded-xl overflow-hidden shadow-md">
+              <div className="overflow-x-auto rounded-xl border border-sky-100 shadow-md">
+                <table className="w-full text-sm sm:text-base border-collapse">
                   <thead className="bg-sky-100 text-sky-800">
                     <tr>
-                      <th className="text-left p-3 font-semibold">📘 Subject</th>
-                      <th className="text-left p-3 font-semibold">📖 Content</th>
-                      <th className="text-left p-3 font-semibold">📈 Progression</th>
-                      <th className="text-left p-3 font-semibold">💬 Comment</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold">📘 Subject</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold">📖 Content</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold">📈 Progress</th>
+                      <th className="text-left p-2 sm:p-3 font-semibold">💬 Comment</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -124,14 +124,14 @@ export default function Home() {
                           i % 2 === 0 ? 'bg-yellow-50' : 'bg-sky-50'
                         } hover:bg-sky-100 transition`}
                       >
-                        <td className="p-3 font-medium text-sky-900">
+                        <td className="p-2 sm:p-3 font-medium text-sky-900 whitespace-nowrap">
                           {p.subjects.name}
                         </td>
-                        <td className="p-3 text-gray-700">{p.content}</td>
-                        <td className="p-3 text-gray-700">
+                        <td className="p-2 sm:p-3 text-gray-700">{p.content}</td>
+                        <td className="p-2 sm:p-3 text-gray-700">
                           {p.progression || 'In Progress'}
                         </td>
-                        <td className="p-3 text-gray-600 italic">
+                        <td className="p-2 sm:p-3 text-gray-600 italic">
                           {p.comment ? `"${p.comment}"` : ''}
                         </td>
                       </tr>
@@ -140,7 +140,7 @@ export default function Home() {
                 </table>
               </div>
 
-              <div className="text-center pt-4 text-gray-500 text-sm">
+              <div className="text-center pt-4 text-gray-500 text-sm sm:text-base">
                 🌈 Keep learning and having fun!
               </div>
             </motion.div>
