@@ -328,7 +328,7 @@ export default function CoolTeachersPage() {
 // 🌴 MAIN LIST VIEW
 if (selectedStudentIndex === null && selectedSubjectIndex === null) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-lime-100 to-amber-100 p-8">
+    <div className="min-h-screen justify-center bg-gradient-to-br from-emerald-100 via-lime-100 to-amber-100 p-8">
       <motion.h1
         key="title"
         initial={{ opacity: 0, y: -20 }}
@@ -338,6 +338,21 @@ if (selectedStudentIndex === null && selectedSubjectIndex === null) {
       >
         🏝️ Floreser Teacher Dashboard 🏝️
       </motion.h1>
+            <motion.div
+       
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex flex-col items-center"
+      >
+
+<a
+  href="/CoolTeachers/TeacherSchedule"
+  className="inline-block mb-3 bg-green-500 ml-8 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-green-400 transition"
+>
+  🕒 School Schedules
+</a>
+      </motion.div>
 
       {/* Subjects Section */}
       <div className="mb-12">

@@ -84,7 +84,21 @@ export default function Home() {
             </div>
 
             {error && <p className="text-red-600 font-semibold">{error}</p>}
+                          <a
+  href="/2026.pdf"
+  download
+  className="inline-block mt-4 bg-sky-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-sky-500 transition"
+>
+  📅 Download School Calendar 2026
+</a>
+<a
+  href="/myschedule"
+  className="inline-block mt-3 bg-green-500 ml-8 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-green-400 transition"
+>
+  🕒 School Schedules
+</a>
           </div>
+          
         ) : (
           <AnimatePresence mode="wait">
             <motion.div
@@ -139,6 +153,8 @@ export default function Home() {
                   </tbody>
                 </table>
               </div>
+
+
 
               <div className="text-center pt-4 text-gray-500 text-sm sm:text-base">
                 🌈 Keep learning and having fun!
