@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { Calendar, User, BookOpen, GraduationCap } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { motion } from 'framer-motion';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { saveAs } from 'file-saver';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const TIME_SLOTS = [
@@ -73,6 +75,182 @@ export default function StudentSchedulePage() {
             setLoading(false);
         }
     };
+
+const generatePDF = async (studentName, schedule) => {
+  if (!schedule.length) {
+    alert('No schedule to export.');
+    return;
+  }
+
+  const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+  const { saveAs } = await import('file-saver');
+
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([842, 595]); // A4 landscape
+  const { width, height } = page.getSize();
+
+  const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const textFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  // 🎨 Match Tailwind color palettes to rgb()
+  const COLORS = {
+    'Jerome': rgb(1.0, 0.992, 0.878), // yellow-50
+    'Jo': rgb(0.93, 0.97, 1.0),       // blue-50
+    'Sarah': rgb(0.945, 0.992, 0.945), // green-50
+    'Emily': rgb(1.0, 0.945, 0.945),   // red-50
+    'Laurie': rgb(1.0, 0.972, 0.93),   // orange-50
+    'Nadir': rgb(0.97, 0.95, 1.0),     // purple-50
+    'Lucia': rgb(1.0, 0.95, 0.98),     // pink-50
+    'Ana': rgb(0.945, 0.945, 0.992),   // indigo-50
+    'Lucia/Ana': rgb(1.0, 0.95, 0.98), // pink-50 again
+  };
+
+  const grouped = groupByDayAndTime(schedule);
+
+  // === Header ===
+  page.drawText('Floreser Bocas del Toro 2025-2026', {
+    x: 40,
+    y: 100,
+    size: 14,
+    font,
+    color: rgb(0.1, 0.5, 0.7),
+  });
+
+  page.drawText(`${studentName}'s Weekly Schedule`, {
+    x: 40,
+    y: 140,
+    size: 24,
+    font,
+    color: rgb(0.1, 0.3, 0.5),
+  });
+
+  // === Table grid ===
+  const tableTop = height - 100;
+  const tableLeft = 40;
+  const colWidth = (width - tableLeft - 40) / (DAYS.length + 1);
+  const rowHeight = 70;
+
+  // Header Row - Draw background first, then text
+  page.drawRectangle({
+    x: tableLeft,
+    y: tableTop,
+    width: colWidth,
+    height: rowHeight,
+    color: rgb(0.85, 0.97, 1),
+  });
+  
+  page.drawText('Time', {
+    x: tableLeft + colWidth / 2 - 15, // Center the text
+    y: tableTop + rowHeight / 2 - 5,
+    size: 11,
+    font,
+    color: rgb(0, 0.3, 0.5),
+  });
+
+  DAYS.forEach((day, i) => {
+    const x = tableLeft + (i + 1) * colWidth;
+    
+    // Draw background first
+    page.drawRectangle({
+      x,
+      y: tableTop,
+      width: colWidth,
+      height: rowHeight,
+      color: rgb(0.1, 0.6, 0.8),
+    });
+    
+    // Then draw text on top
+    page.drawText(day, {
+      x: x + colWidth / 2 - 15, // Center the text
+      y: tableTop + rowHeight / 2 - 5,
+      size: 11,
+      font,
+      color: rgb(1, 1, 1),
+    });
+  });
+
+  // Rows
+  TIME_SLOTS.forEach((slot, rIdx) => {
+    const y = tableTop - (rIdx + 1) * rowHeight;
+
+    // Time column - background first
+    page.drawRectangle({
+      x: tableLeft,
+      y,
+      width: colWidth,
+      height: rowHeight,
+      color: rgb(0.93, 0.98, 1),
+    });
+    
+    // Then text
+    page.drawText(slot, {
+      x: tableLeft + 10,
+      y: y + rowHeight / 2 - 5,
+      size: 10,
+      font: textFont,
+      color: rgb(0, 0.3, 0.5),
+    });
+
+    // Each day
+    DAYS.forEach((day, cIdx) => {
+      const x = tableLeft + (cIdx + 1) * colWidth;
+      const classItem = grouped[day][slot];
+
+      const bgColor = classItem
+        ? COLORS[classItem.teacher] || rgb(0.97, 0.97, 0.97)
+        : rgb(0.98, 0.98, 0.98);
+
+      // Background cell - draw first
+      page.drawRectangle({
+        x,
+        y,
+        width: colWidth,
+        height: rowHeight,
+        color: bgColor,
+        borderColor: rgb(0.8, 0.8, 0.8),
+        borderWidth: 0.5,
+      });
+
+      if (classItem) {
+        // Subject text - on top of background
+        const subjectText = classItem.subject || '';
+        const maxSubjectWidth = colWidth - 16; // Padding on both sides
+        
+        // Truncate long subject names
+        let displaySubject = subjectText;
+        if (subjectText.length > 20) {
+          displaySubject = subjectText.substring(0, 17) + '...';
+        }
+        
+        page.drawText(displaySubject, {
+          x: x + 8,
+          y: y + rowHeight - 25,
+          size: 10,
+          font,
+          color: rgb(0.1, 0.1, 0.1),
+          maxWidth: maxSubjectWidth,
+        });
+
+        // Teacher text
+        page.drawText(`${classItem.teacher}`, {
+          x: x + 8,
+          y: y + 15,
+          size: 9,
+          font: textFont,
+          color: rgb(0.25, 0.25, 0.25),
+          maxWidth: colWidth - 16,
+        });
+      }
+    });
+  });
+
+
+
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  saveAs(blob, `${studentName.replace(/\s+/g, '_')}_Schedule.pdf`);
+};
+
 
     const generateStudentSchedule = () => {
         if (!selectedStudent) return;
@@ -231,7 +409,7 @@ export default function StudentSchedulePage() {
                                                                 ease: "easeOut"
                                                             }}
                                                             whileHover={{ scale: 1.03, y: -2 }}
-                                                            className={`rounded-lg p-2 border-2 text-[10px] leading-tight ${color}`}
+                                                            className={`rounded-lg p-2 border-2 text-sm leading-tight ${color}`}
                                                         >
                                                             <div className="font-bold text-xs mb-1">
                                                                 {classItem.subject}
@@ -259,6 +437,14 @@ export default function StudentSchedulePage() {
                             </tbody>
                         </table>
                     </div>
+                    <div className="text-center mt-4">
+  <button
+    onClick={() => generatePDF(selectedStudent, studentSchedule)}
+    className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition"
+  >
+    📄 Download {selectedStudent}'s Schedule (PDF)
+  </button>
+</div>
                 </motion.div>
             )}
 
