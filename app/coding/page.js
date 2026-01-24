@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import Link from 'next/link';
 const GRID = 20;
 const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -14,17 +14,17 @@ function createShape(existing, enabled) {
     attempts++;
     const type = enabled[rand(0, enabled.length - 1)];
     if (type === 'circle') {
-      s = { id: crypto.randomUUID(), type, x: rand(4, 16), y: rand(4, 16), r: rand(2, 3) };
+      s = { id: crypto.randomUUID(), type, x: rand(4, 16), y: rand(4, 16), r: rand(1, 5) };
     } else if (type === 'rect') {
-      s = { id: crypto.randomUUID(), type, x: rand(2, 14), y: rand(2, 14), w: rand(3, 6), h: rand(3, 6) };
+      s = { id: crypto.randomUUID(), type, x: rand(2, 14), y: rand(2, 14), w: rand(1, 6), h: rand(1, 6) };
     } else if (type === 'line') {
       const x1 = rand(2, 18), y1 = rand(2, 18);
-      let x2 = Math.max(0, Math.min(GRID, x1 + rand(-6, 6)));
-      let y2 = Math.max(0, Math.min(GRID, y1 + rand(-6, 6)));
+      let x2 = Math.max(0, Math.min(GRID, x1 + rand(-2, 2)));
+      let y2 = Math.max(0, Math.min(GRID, y1 + rand(-2, 2)));
       if (Math.abs(x1 - x2) < 2 && Math.abs(y1 - y2) < 2) { x2 += 3; y2 += 3; }
       s = { id: crypto.randomUUID(), type, x1, y1, x2, y2 };
     } else if (type === 'polygon') {
-      const p1 = { x: rand(2, 10), y: rand(2, 10) };
+      const p1 = { x: rand(2, 18), y: rand(2, 18) };
       const p2 = { x: p1.x + rand(4, 8), y: p1.y + rand(-2, 2) };
       const p3 = { x: rand(p1.x, p2.x), y: p1.y + rand(4, 8) };
       s = { id: crypto.randomUUID(), type, points: [p1, p2, p3] };
@@ -231,7 +231,15 @@ export default function DrawWithCode() {
               ))}
             </div>
             <button onClick={() => { setMode('choose'); setScore(0); setScreen('game'); }} className="w-full py-6 bg-white text-black font-black rounded-2xl mb-4 text-xl">CLICK MODE</button>
-            <button onClick={() => { setMode('write'); setScore(0); setScreen('game'); }} className="w-full py-6 border-2 border-white font-black rounded-2xl text-xl hover:bg-white/10">WRITE MODE</button>
+            
+          <button onClick={() => { setMode('write'); setScore(0); setScreen('game'); }} className="w-full py-6 border-2 border-white font-black rounded-2xl text-xl hover:bg-white/10">WRITE MODE</button>
+          <Link
+  href="/coding/maze-navigator"
+  className="block w-full py-6 mt-6 bg-pink-500 text-white font-black rounded-2xl text-xl hover:bg-pink-600 transition-all shadow-lg"
+>
+  MAZE NAVIGATOR
+</Link>
+
           </motion.div>
         )}
 
