@@ -24,16 +24,16 @@ const CHALLENGES = {
     { id: "2", type: "polygon", color: "#00AAFF", rotation: 0, params: { p1x: 16, p1y: 10, p2x: 19, p2y: 5, p3x: 19, p3y: 15 } },
     { id: "3", type: "polygon", color: "#00AAFF", rotation: 0, params: { p1x: 9, p1y: 15, p2x: 5, p2y: 10, p3x: 8, p3y: 10 } },
     { id: "4", type: "polygon", color: "#00AAFF", rotation: 0, params: { p1x: 7, p1y: 9, p2x: 10, p2y: 5, p3x: 10, p3y: 9 } },
-    { id: "5", type: "ellipse", color: "#00AAFF", rotation: 0, params: { cx: 10, cy: 10, rx: 9, ry: 2 } }
+    { id: "5", type: "ellipse", color: "#00AAFF", rotation: 0, params: { x: 1, y: 8, w: 18, h: 4 } }
   ],
   flower: [
     { id: "1", type: "circle", color: "#FACC15", rotation: 0, params: { cx: 10, cy: 10, r: 2 } },
     { id: "2", type: "line", color: "#AAFF00", rotation: 0, params: { x1: 10, y1: 23, x2: 10, y2: 10 } },
-    { id: "3", type: "ellipse", color: "#FF77AA", rotation: 0, params: { cx: 15, cy: 10, rx: 4, ry: 2 } },
-    { id: "4", type: "ellipse", color: "#FF77AA", rotation: 135, params: { cx: 13, cy: 6, rx: 4, ry: 2 } },
-    { id: "5", type: "ellipse", color: "#FF77AA", rotation: 90, params: { cx: 10, cy: 5, rx: 4, ry: 2 } },
-    { id: "6", type: "ellipse", color: "#FF77AA", rotation: 45, params: { cx: 7, cy: 6, rx: 4, ry: 2 } },
-    { id: "7", type: "ellipse", color: "#FF77AA", rotation: 0, params: { cx: 5, cy: 10, rx: 4, ry: 2 } }
+    { id: "3", type: "ellipse", color: "#FF77AA", rotation: 0, params: { x: 11, y: 8, w: 8, h: 4 } },
+    { id: "4", type: "ellipse", color: "#FF77AA", rotation: 135, params: { x: 9, y: 2, w: 8, h: 4 } },
+    { id: "5", type: "ellipse", color: "#FF77AA", rotation: 90, params: { x: 6, y: 1, w: 8, h: 4 } },
+    { id: "6", type: "ellipse", color: "#FF77AA", rotation: 45, params: { x: 3, y: 2, w: 8, h: 4 } },
+    { id: "7", type: "ellipse", color: "#FF77AA", rotation: 0, params: { x: 1, y: 8, w: 8, h: 4 } }
   ]
 };
 
@@ -70,7 +70,7 @@ export default function CodeDrawingGame() {
 
     if (type === 'circle') newShape.params = { cx: 10, cy: 10, r: 3 };
     if (type === 'rect') newShape.params = { x: 5, y: 5, w: 4, h: 4 };
-    if (type === 'ellipse') newShape.params = { cx: 10, cy: 10, rx: 4, ry: 2 };
+    if (type === 'ellipse') newShape.params = { x: 5, y: 8, w: 8, h: 4 };
     if (type === 'line') newShape.params = { x1: 2, y1: 2, x2: 10, y2: 10 };
     if (type === 'polygon') newShape.params = { p1x: 5, p1y: 15, p2x: 10, p2y: 5, p3x: 15, p3y: 15 };
 
@@ -381,7 +381,7 @@ function ShapeRenderer({ s, isSelected, isHitbox, isOutline }) {
   let centerX = 0, centerY = 0;
   if (s.type === 'circle') { centerX = s.params.cx; centerY = s.params.cy; }
   else if (s.type === 'rect') { centerX = s.params.x + s.params.w / 2; centerY = s.params.y + s.params.h / 2; }
-  else if (s.type === 'ellipse') { centerX = s.params.cx; centerY = s.params.cy; }
+  else if (s.type === 'ellipse') { centerX = s.params.x + s.params.w / 2; centerY = s.params.y + s.params.h / 2; }
   else if (s.type === 'line') { centerX = (s.params.x1 + s.params.x2) / 2; centerY = (s.params.y1 + s.params.y2) / 2; }
   else if (s.type === 'polygon') { centerX = (s.params.p1x + s.params.p2x + s.params.p3x) / 3; centerY = (s.params.p1y + s.params.p2y + s.params.p3y) / 3; }
 
@@ -389,7 +389,13 @@ function ShapeRenderer({ s, isSelected, isHitbox, isOutline }) {
 
   if (s.type === 'circle') return <circle cx={s.params.cx} cy={s.params.cy} r={s.params.r} transform={transform} {...props} />;
   if (s.type === 'rect') return <rect x={s.params.x} y={s.params.y} width={s.params.w} height={s.params.h} transform={transform} {...props} />;
-  if (s.type === 'ellipse') return <ellipse cx={s.params.cx} cy={s.params.cy} rx={s.params.rx} ry={s.params.ry} transform={transform} {...props} />;
+  if (s.type === 'ellipse') {
+    const cx = s.params.x + s.params.w / 2;
+    const cy = s.params.y + s.params.h / 2;
+    const rx = s.params.w / 2;
+    const ry = s.params.h / 2;
+    return <ellipse cx={cx} cy={cy} rx={rx} ry={ry} transform={transform} {...props} />;
+  }
   if (s.type === 'line') return <line x1={s.params.x1} y1={s.params.y1} x2={s.params.x2} y2={s.params.y2} transform={transform} {...props} stroke={isOutline ? '#4ADE80' : (isHitbox ? 'transparent' : s.color)} strokeWidth={isOutline ? 0.3 : (isHitbox ? 1 : 0.5)} strokeLinecap="round" />;
   if (s.type === 'polygon') return <polygon points={`${s.params.p1x},${s.params.p1y} ${s.params.p2x},${s.params.p2y} ${s.params.p3x},${s.params.p3y}`} transform={transform} {...props} />;
   return null;
