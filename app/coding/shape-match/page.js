@@ -240,6 +240,12 @@ export default function ShapeMatchGame() {
     });
   }
 
+  function removeCommand(type) {
+    if (isRunning) return;
+    setAttempted(false);
+    setCommands(prev => prev.filter(c => c.type !== type));
+  }
+
   function setVal(type, v) {
     if (isRunning) return;
     setAttempted(false);
@@ -557,10 +563,20 @@ export default function ShapeMatchGame() {
                         initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
                         className={`p-3 rounded-xl border ${col.border} ${col.dim}`}
                       >
-                        <label className={`text-[9px] font-black uppercase tracking-widest block mb-2 ${col.text}`}>
-                          {meta.label}
-                          {cmd.type === 'rotation' && <span className="text-slate-600 ml-1 normal-case font-normal">(±15° steps)</span>}
-                        </label>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className={`text-[9px] font-black uppercase tracking-widest ${col.text}`}>
+                            {meta.label}
+                            {cmd.type === 'rotation' && <span className="text-slate-600 ml-1 normal-case font-normal">(±15° steps)</span>}
+                          </label>
+                          <button
+                            onClick={() => removeCommand(cmd.type)}
+                            disabled={isRunning}
+                            title={`Remove ${meta.label}`}
+                            className="w-5 h-5 rounded-md flex items-center justify-center text-slate-600 hover:text-red-400 hover:bg-red-500/15 transition-all disabled:opacity-30 text-[14px] font-black leading-none"
+                          >
+                            ×
+                          </button>
+                        </div>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setVal(cmd.type, cmd.value - meta.step)}
