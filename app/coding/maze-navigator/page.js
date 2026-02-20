@@ -64,10 +64,8 @@ function generateMaze(size, complexity = 0.7) {
 }
 
 const ACTIONS = [
-  { id: 'up', label: '↑', name: 'UP', color: 'from-blue-500 to-blue-600' },
-  { id: 'down', label: '↓', name: 'DOWN', color: 'from-green-500 to-green-600' },
-  { id: 'left', label: '←', name: 'LEFT', color: 'from-yellow-500 to-yellow-600' },
-  { id: 'right', label: '→', name: 'RIGHT', color: 'from-purple-500 to-purple-600' },
+  { id: 'translateX', label: 'translateX()', color: 'from-blue-500 to-blue-600' },
+  { id: 'translateY', label: 'translateY()', color: 'from-purple-500 to-purple-600' },
 ];
 
 export default function MazeNavigator() {
@@ -110,7 +108,7 @@ export default function MazeNavigator() {
 
   function updateCommandSteps(id, steps) {
     setCommands(commands.map(cmd => 
-      cmd.id === id ? { ...cmd, steps: Math.max(1, Math.min(10, parseInt(steps) || 1)) } : cmd
+      cmd.id === id ? { ...cmd, steps: parseInt(steps) || 0 } : cmd
     ));
   }
 
@@ -128,15 +126,15 @@ export default function MazeNavigator() {
     for (let i = 0; i < commands.length; i++) {
       setCurrentStep(i);
       const cmd = commands[i];
-      const action = ACTIONS.find(a => a.id === cmd.action);
-      
-      for (let step = 0; step < cmd.steps; step++) {
+
+      const steps = Math.abs(cmd.steps);
+      const dir = Math.sign(cmd.steps) || 1;
+
+      for (let step = 0; step < steps; step++) {
         let newPos = { ...pos };
         
-        if (action.id === 'up') newPos.y -= 1;
-        else if (action.id === 'down') newPos.y += 1;
-        else if (action.id === 'left') newPos.x -= 1;
-        else if (action.id === 'right') newPos.x += 1;
+        if (cmd.action === 'translateX') newPos.x += dir;
+        else if (cmd.action === 'translateY') newPos.y += dir;
         
         // Check bounds and walls
         if (newPos.x < 0 || newPos.x >= gridSize || 
@@ -337,7 +335,7 @@ EXIT</Link>
                 {/* Available Actions */}
                 <div className="mb-2 flex-shrink-0">
                   <p className="text-[10px] md:text-xs text-slate-400 mb-1">Tap to add:</p>
-                  <div className="grid grid-cols-4 gap-1 md:gap-1.5">
+                  <div className="grid grid-cols-2 gap-1 md:gap-1.5">
                     {ACTIONS.map(action => (
                       <motion.button
                         key={action.id}
@@ -345,10 +343,9 @@ EXIT</Link>
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         disabled={isRunning}
-                        className={`bg-gradient-to-br ${action.color} p-1.5 md:p-2 rounded-lg font-black text-center select-none shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+                        className={`bg-gradient-to-br ${action.color} p-2 md:p-3 rounded-lg font-black text-center select-none shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
-                        <div className="text-xl md:text-2xl">{action.label}</div>
-                        <div className="text-[8px] md:text-[10px] mt-0.5">{action.name}</div>
+                        <div className="text-sm md:text-base font-mono">{action.label}</div>
                       </motion.button>
                     ))}
                   </div>
@@ -380,17 +377,30 @@ EXIT</Link>
                                 currentStep === index && isRunning ? 'ring-2 ring-white shadow-lg' : ''
                               }`}
                             >
-                              <div className="text-lg md:text-xl">{action.label}</div>
-                              <span className="font-bold flex-1 text-[10px] md:text-xs">{action.name}</span>
-                              <input
-                                type="number"
-                                min="1"
-                                max="10"
-                                value={cmd.steps}
-                                onChange={(e) => updateCommandSteps(cmd.id, e.target.value)}
-                                disabled={isRunning}
-                                className="w-8 md:w-10 bg-black/50 border-2 border-white/30 rounded px-1 py-0.5 text-center font-bold text-[10px] md:text-xs"
-                              />
+                              <span className="font-bold flex-1 text-[10px] md:text-xs font-mono">{action.label}</span>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => updateCommandSteps(cmd.id, cmd.steps - 1)}
+                                  disabled={isRunning}
+                                  className="w-6 h-6 bg-black/30 hover:bg-black/50 rounded font-bold text-sm leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  −
+                                </button>
+                                <input
+                                  type="number"
+                                  value={cmd.steps}
+                                  onChange={(e) => updateCommandSteps(cmd.id, e.target.value)}
+                                  disabled={isRunning}
+                                  className="w-10 md:w-12 bg-black/50 border-2 border-white/30 rounded px-1 py-0.5 text-center font-bold text-[10px] md:text-xs"
+                                />
+                                <button
+                                  onClick={() => updateCommandSteps(cmd.id, cmd.steps + 1)}
+                                  disabled={isRunning}
+                                  className="w-6 h-6 bg-black/30 hover:bg-black/50 rounded font-bold text-sm leading-none disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  +
+                                </button>
+                              </div>
                               <button
                                 onClick={() => removeCommand(cmd.id)}
                                 disabled={isRunning}
