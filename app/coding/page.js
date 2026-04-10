@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-
+import Image from 'next/image'; 
 const GAMES = [
   {
     href: '/coding/code-draw',
@@ -69,6 +69,16 @@ const GAMES = [
     bg: '#001a0a',
     stars: 3,
     tag: 'LEVEL DESIGN',
+  },
+    {
+    href: 'https://trinket.io/pygame/64720f309f55',
+    title: 'FIX THE ROBOT',
+    emoji: '',
+    tagline: 'fix the robot code !',
+    desc: 'change the parameters ( x , y , h , w, radius, color) to make the robot look like the target image.',
+    bg: '#001a0a',
+    stars: 3,
+    tag: 'BUG FIXING',
   },
 ];
 
@@ -244,6 +254,7 @@ export default function CodingArcade() {
               </Link>
             </motion.div>
           ))}
+          <Image src='/robot.png' width={400} height={400}/>
         </div>
 
         {/* ── FOOTER ── */}
