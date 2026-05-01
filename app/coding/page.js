@@ -80,6 +80,16 @@ const GAMES = [
     stars: 3,
     tag: 'BUG FIXING',
   },
+      {
+    href: 'https://trinket.io/pygame/695c72260ad3',
+    title: 'MAKE IT MOVE',
+    emoji: '',
+    tagline: 'make the circle move !',
+    desc: 'Find a way to make the circle move and stop him from going off the screen.',
+    bg: '#52f18ffe',
+    stars: 3,
+    tag: 'BUG FIXING',
+  },
 ];
 
 const Stars = ({ count }) => (
