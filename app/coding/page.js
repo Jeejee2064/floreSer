@@ -90,6 +90,16 @@ const GAMES = [
     stars: 3,
     tag: 'BUG FIXING',
   },
+        {
+    href: 'https://trinket.io/pygame/695c72260ad3',
+    title: 'MAKE IT BOUNCE',
+    emoji: '',
+    tagline: 'make the circle bounce !',
+    desc: 'Find a way to make the circle bounce.',
+    bg: '#52f18ffe',
+    stars: 3,
+    tag: 'BUG FIXING',
+  },
 ];
 
 const Stars = ({ count }) => (
