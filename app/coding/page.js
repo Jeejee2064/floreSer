@@ -91,7 +91,7 @@ const GAMES = [
     tag: 'BUG FIXING',
   },
         {
-    href: 'https://trinket.io/pygame/efda26ac65ac',
+    href: 'https://trinket.io/pygame/77fbc00013c8',
     title: 'MAKE IT BOUNCE',
     emoji: '',
     tagline: 'make the circle bounce !',
