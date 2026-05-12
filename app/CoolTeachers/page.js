@@ -43,6 +43,7 @@ export default function CoolTeachersPage() {
   const [authenticated, setAuthenticated] = useState(false);
   const [inputPassword, setInputPassword] = useState('');
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [selectedSemester, setSelectedSemester] = useState(1);
 
   // 🌴 Check if we already have a session
   useEffect(() => {
@@ -134,7 +135,8 @@ export default function CoolTeachersPage() {
     const { data: progress } = await supabase
       .from('progress')
       .select('*, subject_id')
-      .eq('student_id', student.id);
+      .eq('student_id', student.id)
+      .eq('semester', selectedSemester);
 
     const merged = subjects.map((subj) => {
       const existing = progress?.find((p) => p.subject_id === subj.id);
@@ -167,7 +169,8 @@ export default function CoolTeachersPage() {
     const { data: progress } = await supabase
       .from('progress')
       .select('*, student_id')
-      .eq('subject_id', subject.id);
+      .eq('subject_id', subject.id)
+      .eq('semester', selectedSemester);
 
     const merged = students.map((student) => {
       const existing = progress?.find((p) => p.student_id === student.id);
@@ -225,6 +228,7 @@ export default function CoolTeachersPage() {
             .insert({
               student_id: student.id,
               subject_id: row.subject_id,
+              semester: selectedSemester,
               content: row.content,
               progression: row.progression,
               comment: row.comment,
@@ -268,6 +272,7 @@ export default function CoolTeachersPage() {
             .insert({
               student_id: row.student_id,
               subject_id: subject.id,
+              semester: selectedSemester,
               content: row.content,
               progression: row.progression,
               comment: row.comment,
@@ -299,6 +304,21 @@ export default function CoolTeachersPage() {
     setSubjectProgressData([]);
   };
 
+  const handleSemesterSwitch = (sem) => {
+    if (sem === selectedSemester) return;
+    if (isEdited || isSubjectEdited) {
+      const confirmLeave = confirm('You have unsaved changes. Leave anyway?');
+      if (!confirmLeave) return;
+    }
+    setSelectedSemester(sem);
+    setSelectedStudentIndex(null);
+    setSelectedSubjectIndex(null);
+    setProgressData([]);
+    setSubjectProgressData([]);
+    setIsEdited(false);
+    setIsSubjectEdited(false);
+  };
+
   const nextStudent = () => {
     if (selectedStudentIndex < students.length - 1)
       handleSelectStudent(selectedStudentIndex + 1);
@@ -324,8 +344,26 @@ export default function CoolTeachersPage() {
   const currentSubject =
     selectedSubjectIndex !== null ? subjects[selectedSubjectIndex] : null;
 
+  // 🌴 SEMESTER TABS (reusable)
+  const SemesterTabs = () => (
+    <div className="flex justify-center gap-2 mb-6">
+      {[1, 2].map((sem) => (
+        <button
+          key={sem}
+          onClick={() => handleSemesterSwitch(sem)}
+          className={`px-6 py-2 rounded-full font-bold text-sm transition-all shadow-sm ${
+            selectedSemester === sem
+              ? 'bg-emerald-600 text-white shadow-md scale-105'
+              : 'bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50'
+          }`}
+        >
+          {sem === 1 ? '🌱 Semester 1' : '🌺 Semester 2'}
+        </button>
+      ))}
+    </div>
+  );
+
   // 🌴 MAIN LIST VIEW
-// 🌴 MAIN LIST VIEW
 if (selectedStudentIndex === null && selectedSubjectIndex === null) {
   return (
     <div className="min-h-screen justify-center bg-gradient-to-br from-emerald-100 via-lime-100 to-amber-100 p-8">
@@ -338,8 +376,11 @@ if (selectedStudentIndex === null && selectedSubjectIndex === null) {
       >
         🏝️ Floreser Teacher Dashboard 🏝️
       </motion.h1>
+
+      <SemesterTabs />
+
             <motion.div
-       
+
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -428,6 +469,7 @@ if (selectedStudentIndex === null && selectedSubjectIndex === null) {
   if (selectedStudentIndex !== null) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-amber-50 via-lime-50 to-emerald-100 p-4 sm:p-6">
+        <SemesterTabs />
         {/* 🌿 Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3 sm:gap-0">
           {/* Back button */}
@@ -618,6 +660,7 @@ if (selectedStudentIndex === null && selectedSubjectIndex === null) {
   if (selectedSubjectIndex !== null) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-amber-50 via-lime-50 to-emerald-100 p-4 sm:p-6">
+        <SemesterTabs />
         {/* 🌿 Header */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3 sm:gap-0">
           {/* Back button */}
