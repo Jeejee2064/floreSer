@@ -100,6 +100,16 @@ const GAMES = [
     stars: 3,
     tag: 'BUG FIXING',
   },
+          {
+    href: 'https://trinket.io/pygame/8eb16b77b098',
+    title: 'Loops',
+    emoji: '',
+    tagline: 'draw various circles with minimal code !',
+    desc: 'Discover the power of loops by drawing multiple circles with just a few lines of code.',
+    bg: '#52f18ffe',
+    stars: 3,
+    tag: 'BUG FIXING',
+  },
 ];
 
 const Stars = ({ count }) => (
