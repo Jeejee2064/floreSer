@@ -111,7 +111,7 @@ const GAMES = [
     tag: 'BUG FIXING',
   },
             {
-    href: 'https://trinket.io/pygame/8eb16b77b098',
+    href: 'https://trinket.io/pygame/07067aff272d',
     title: 'Lists',
     emoji: '',
     tagline: 'change the color using the index in the list !',
