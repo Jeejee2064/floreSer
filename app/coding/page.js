@@ -110,6 +110,17 @@ const GAMES = [
     stars: 3,
     tag: 'BUG FIXING',
   },
+            {
+    href: 'https://trinket.io/pygame/8eb16b77b098',
+    title: 'Lists',
+    emoji: '',
+    tagline: 'change the color using the index in the list !',
+    desc: 'Learn how to use lists to store multiple values and access them using their index to change the color of the circles.',
+    bg: '#10cb9ffe',
+    stars: 3,
+    tag: 'BUG FIXING',
+  },
+  
 ];
 
 const Stars = ({ count }) => (
