@@ -120,6 +120,16 @@ const GAMES = [
     stars: 3,
     tag: 'BUG FIXING',
   },
+              {
+    href: 'https://trinket.io/pygame/b52ed7e9817d',
+    title: 'Conditions ',
+    emoji: '',
+    tagline: 'change the color using conditions !',
+    desc: 'Learn how to use conditions to change the color of the circles based on certain criteria, such as their position or size.',
+    bg: '#10cb9ffe',
+    stars: 3,
+    tag: 'BUG FIXING',
+  },
   
 ];
 
